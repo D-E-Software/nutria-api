@@ -12,54 +12,54 @@ use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    public function store(Request $request, string $clinicSlug): JsonResponse
+    public function store(Request $request, Clinic $clinic): JsonResponse
     {
-        $clinic = Clinic::where('slug', $clinicSlug)
-            ->where('is_active', true)
-            ->firstOrFail();
-
         $data = $request->validate([
-            'program_id' => 'required|exists:programs,id',
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'nullable|string|max:30',
+            'program_id'      => ['required', 'integer', 'exists:programs,id'],
+            'customer_name'   => ['required', 'string', 'max:255'],
+            'customer_email'  => ['required', 'email', 'max:255'],
+            'customer_phone'  => ['nullable', 'string', 'max:30'],
         ]);
 
-        $program = Program::where('id', $data['program_id'])
+        $program = Program::query()
+            ->where('id', $data['program_id'])
             ->where('clinic_id', $clinic->id)
             ->where('is_active', true)
             ->firstOrFail();
 
         $order = Order::create([
-            'clinic_id' => $clinic->id,
-            'program_id' => $program->id,
-            'order_ref' => strtoupper(Str::random(8)),
-            'customer_name' => $data['customer_name'],
-            'customer_email' => $data['customer_email'],
-            'customer_phone' => $data['customer_phone'] ?? null,
-            'amount' => $program->price,
-            'currency' => $program->currency,
-            'status' => 'pending',
+            'clinic_id'       => $clinic->id,
+            'program_id'      => $program->id,
+            'order_ref'       => strtoupper(Str::random(8)),
+            'customer_name'   => $data['customer_name'],
+            'customer_email'  => $data['customer_email'],
+            'customer_phone'  => $data['customer_phone'] ?? null,
+            'amount'          => $program->price,
+            'currency'        => $program->currency,
+            'status'          => 'pending',
         ]);
 
-        // TODO: Generate bank payment URL and redirect
+        // TODO: Generate payment URL (gateway init) and return it
         return response()->json([
             'order' => $order,
             'payment_url' => null,
         ], 201);
     }
 
-    public function paymentCallback(Request $request, Order $order): JsonResponse
+    public function paymentCallback(Request $request, Clinic $clinic, Order $order): JsonResponse
     {
-        // TODO: Verify callback signature from bank
+        if ((int) $order->clinic_id !== (int) $clinic->id) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
 
+        // TODO: Verify callback signature from bank/gateway
         $status = $request->input('status') === 'approved' ? 'completed' : 'failed';
 
         $order->update([
-            'status' => $status,
-            'gateway_ref' => $request->input('transaction_id'),
+            'status'         => $status,
+            'gateway_ref'    => $request->input('transaction_id'),
             'gateway_status' => $request->input('status'),
-            'paid_at' => $status === 'completed' ? now() : null,
+            'paid_at'        => $status === 'completed' ? now() : null,
         ]);
 
         // TODO: If completed, send PDF email

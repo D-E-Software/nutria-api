@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'resolve.clinic' => App\Http\Middleware\ResolveClinic::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

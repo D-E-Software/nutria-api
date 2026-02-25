@@ -4,17 +4,12 @@ use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Public;
 use Illuminate\Support\Facades\Route;
 
-// Auth
-Route::post('/auth/login', [Admin\AuthController::class, 'login']);
-Route::post('/auth/logout', [Admin\AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/auth/me', [Admin\AuthController::class, 'me'])->middleware('auth:sanctum');
+// Health check
 
-// Public
-Route::prefix('{clinic}')->group(function () {
-    Route::get('/programs', [Public\ProgramController::class, 'index']);
-    Route::post('/orders', [Public\OrderController::class, 'store']);
-    Route::post('/orders/{order}/callback', [Public\OrderController::class, 'paymentCallback']);
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
 });
+
 
 // Admin
 Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
@@ -25,6 +20,20 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [Admin\OrderController::class, 'index']);
     Route::get('/orders/{order}', [Admin\OrderController::class, 'show']);
     Route::get('/emails', [Admin\EmailController::class, 'index']);
-    Route::get('/settings', [Admin\ClinicSettingController::class, 'index']);
-    Route::put('/settings', [Admin\ClinicSettingController::class, 'update']);
+    Route::get('/settings', [Admin\ClinicSettingsController::class, 'index']);
+    Route::put('/settings', [Admin\ClinicSettingsController::class, 'update']);
 });
+
+
+// Auth
+Route::post('/auth/login', [Admin\AuthController::class, 'login']);
+Route::post('/auth/logout', [Admin\AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/auth/me', [Admin\AuthController::class, 'me'])->middleware('auth:sanctum');
+
+// Public
+Route::middleware('resolve.clinic')->group(function () {
+    Route::get('/programs', [Public\ProgramController::class, 'index']);
+    Route::post('/orders', [Public\OrderController::class, 'store']);
+    Route::post('/orders/{order}/callback', [Public\OrderController::class, 'paymentCallback']);
+});
+
