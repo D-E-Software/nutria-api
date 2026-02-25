@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('clinic_id')->constrained('clinics');
             $table->string('key');
-            $table->text('value');
+            $table->text('value')->nullable();
             $table->string('group');
             $table->timestamps();
         });
