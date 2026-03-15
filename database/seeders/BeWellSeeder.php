@@ -14,7 +14,7 @@ class BeWellSeeder extends Seeder
     public function run(): void
     {
         // Clinic
-        $clinic = Clinic::create([
+        $clinic = Clinic::firstOrCreate([
             'name' => 'Be Well Sağlıklı Yaşam Merkezi',
             'slug' => 'bewellklinik',
             'domain' => 'bewellklinik.com',
@@ -41,14 +41,14 @@ class BeWellSeeder extends Seeder
         ];
 
         foreach ($settings as $setting) {
-            ClinicSetting::create([
+            ClinicSetting::firstOrCreate([
                 'clinic_id' => $clinic->id,
                 ...$setting,
             ]);
         }
 
         // Admin user
-        User::create([
+        User::firstOrCreate([
             'clinic_id' => $clinic->id,
             'name' => 'Mualla Seray Birikim',
             'email' => 'admin@bewellklinik.com',
@@ -58,7 +58,7 @@ class BeWellSeeder extends Seeder
         ]);
 
         // Programs
-        Program::create([
+        Program::firstOrCreate([
             'clinic_id' => $clinic->id,
             'title' => 'Sağlıklı Başlangıç Programı',
             'price' => 149.00,
@@ -77,7 +77,7 @@ class BeWellSeeder extends Seeder
             'sort_order' => 1,
         ]);
 
-        Program::create([
+        Program::firstOrCreate([
             'clinic_id' => $clinic->id,
             'title' => 'Premium Dönüşüm Programı',
             'price' => 249.00,
