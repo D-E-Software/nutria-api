@@ -8,6 +8,8 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',
+        'http://admin.localhost:3000',
+        'https://bewell-two.vercel.app/',
     ],
 
     'allowed_origins_patterns' => [],
