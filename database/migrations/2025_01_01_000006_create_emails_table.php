@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('to_email');
             $table->string('subject');
             $table->enum('type', ['program_delivery', 'contact_form']);
-            $table->enum('status', ['sent', 'failed'])->default('sent');
+            $table->longText('body')->nullable();
+            $table->string('status')->default('sent');
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
 

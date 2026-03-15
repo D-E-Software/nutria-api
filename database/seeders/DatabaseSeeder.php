@@ -15,6 +15,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-       $this->call(BeWellSeeder::class);
+        $this->call([
+            BeWellSeeder::class,
+            OrderSeeder::class,
+            EmailSeeder::class
+        ]);
+
+
+        $this->command->info('🎉 Database seeding completed!');
+        $this->command->table(
+            ['Table', 'Count'],
+            [
+                ['Clinics', \App\Models\Clinic::count()],
+                ['Programs', \App\Models\Program::count()],
+                ['Orders', \App\Models\Order::count()],
+                ['Emails', \App\Models\Email::count()],
+            ]
+        );
+
     }
 }

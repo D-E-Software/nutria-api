@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('duration')->nullable();
             $table->text('description')->nullable();
             $table->json('features')->nullable();
+            $table->json('translations')->nullable();
             $table->string('pdf_path')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_featured')->default(false);

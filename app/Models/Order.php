@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,11 +32,28 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Order extends Model
 {
+
+    use HasFactory;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_FAILED = 'failed';
+    public const STATUS_REFUNDED = 'refunded';
     protected $fillable = [
         'clinic_id', 'program_id', 'order_ref', 'customer_name',
         'customer_email', 'customer_phone', 'amount', 'currency',
         'status', 'gateway_ref', 'gateway_status', 'paid_at', 'refunded_at',
     ];
+
+    public static function getValidStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_COMPLETED,
+            self::STATUS_FAILED,
+            self::STATUS_REFUNDED,
+        ];
+    }
 
     protected $casts = [
         'amount' => 'decimal:2',
@@ -60,6 +78,31 @@ class Order extends Model
 
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === self::STATUS_COMPLETED;
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->status === self::STATUS_COMPLETED || $this->status === self::STATUS_REFUNDED;
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeRefunded($query)
+    {
+        return $query->where('status', 'refunded');
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->whereNotNull('paid_at');
     }
 }

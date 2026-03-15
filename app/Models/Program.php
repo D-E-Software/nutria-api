@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_active
  * @property bool $is_featured
  * @property int $sort_order
+ * @property array|null $translations
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Clinic $clinic
@@ -40,7 +41,14 @@ class Program extends Model
         'features' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'translations' => 'array',
     ];
+
+    public function translate(string $field, string $locale = 'tr'): mixed
+    {
+        if ($locale === 'tr') return $this->$field;
+        return $this->translations[$locale][$field] ?? $this->$field;
+    }
 
     public function clinic(): BelongsTo
     {

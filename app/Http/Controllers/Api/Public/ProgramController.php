@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use App\Models\Program;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProgramController extends Controller
 {
@@ -27,6 +26,7 @@ class ProgramController extends Controller
                 'description',
                 'features',
                 'is_featured',
+                'is_active',
             ]);
 
         return response()->json($programs);
