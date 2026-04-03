@@ -30,7 +30,7 @@ class OrderController extends Controller
             return response()->json(['message' => 'Yetkisiz.'], 403);
         }
 
-        $order->load(['program:id,title,duration', 'emails']);
+        $order->load(['program:id,title,duration,price,currency', 'emails']);
 
         return response()->json($order);
     }

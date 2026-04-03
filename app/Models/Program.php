@@ -33,7 +33,7 @@ class Program extends Model
     protected $fillable = [
         'clinic_id', 'title', 'price', 'currency', 'duration',
         'description', 'features', 'pdf_path', 'is_active',
-        'is_featured', 'sort_order',
+        'is_featured', 'sort_order', 'translations',
     ];
 
     protected $casts = [
