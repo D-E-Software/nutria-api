@@ -10,8 +10,6 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
-
-
 // Admin - path based instead of subdomain based
 Route::prefix('admin')->group(function () {
     Route::post('/auth/login', [Admin\AuthController::class, 'login']);
