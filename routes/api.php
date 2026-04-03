@@ -11,6 +11,7 @@ Route::get('/health', function () {
 });
 
 
+
 // Admin - path based instead of subdomain based
 Route::prefix('admin')->group(function () {
     Route::post('/auth/login', [Admin\AuthController::class, 'login']);
